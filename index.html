@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bland.ai Web Agent Widget</title>
-    <script src="https://cdn.jsdelivr.net/npm/bland-client-js-sdk@latest/dist/bland-client-js-sdk.umd.js"></script>
+    <script src="https://unpkg.com/bland-client-js-sdk@latest/dist/bland-client-js-sdk.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.min.js"></script>
 </head>
 <body>
     <div id="agent-widget">
@@ -12,54 +13,50 @@
     </div>
 
     <script>
+        import { BlandWebClient } from 'bland-client-js-sdk';
+
         document.addEventListener('DOMContentLoaded', async () => {
             const API_KEY = 'sk-vi2t1655977tdj9x96n3f0mmq878zkb00ph56z0gcuoyj2ditxnaaatg5l99yj4269';
+            let agentId = null;
+            let sessionToken = null;
 
             const createAgent = async () => {
                 try {
                     console.log('Creating agent...');
-                    debugger;
-                    const response = await fetch('https://api.bland.ai/v1/agents', {
+                    const options = {
                         method: 'POST',
                         headers: {
-                            'Authorization': API_KEY,
+                            authorization: API_KEY,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
+                            "pathway_id": "8929f3f6-c602-4b5a-a3d9-97d5639dea8e",
                             "prompt": "You are role-playing an optometry patient. Wait for a reply from the agent and then follow the pathway."
                         })
-                    });
+                    };
 
-                    if (!response.ok) {
-                        throw new Error(`Error creating agent: ${response.statusText}`);
-                    }
+                    const response = await fetch('https://api.bland.ai/v1/agents', options);
                     const data = await response.json();
-                    console.log('Agent created successfully:', data.agent.agent_id);
-                    debugger;
-                    return data.agent.agent_id;
+                    agentId = data.agent.agent_id;
+                    console.log('Agent created successfully:', agentId);
                 } catch (error) {
                     console.error('Error creating agent:', error);
                     alert('Failed to create agent. Please try again.');
                 }
             };
 
-            const authorizeAgent = async (agentId) => {
+            const authorizeAgent = async () => {
                 try {
                     console.log('Authorizing agent...');
-                    debugger;
                     const response = await fetch(`https://api.bland.ai/v1/agents/${agentId}/authorize`, {
                         method: 'POST',
                         headers: {
-                            'Authorization': API_KEY
+                            authorization: API_KEY
                         }
                     });
-                    if (!response.ok) {
-                        throw new Error(`Error authorizing agent: ${response.statusText}`);
-                    }
                     const data = await response.json();
-                    console.log('Agent authorized successfully:', data.token);
-                    debugger;
-                    return data.token;
+                    sessionToken = data.token;
+                    console.log('Agent authorized successfully:', sessionToken);
                 } catch (error) {
                     console.error('Error authorizing agent:', error);
                     alert('Failed to authorize agent. Please try again.');
@@ -68,16 +65,15 @@
 
             const initConversation = async () => {
                 try {
-                    console.log('Initializing conversation...');
-                    debugger;
-                    const agentId = await createAgent();
-                    if (!agentId) return;
-
-                    const sessionToken = await authorizeAgent(agentId);
-                    if (!sessionToken) return;
+                    if (!agentId) {
+                        await createAgent();
+                    }
+                    if (!sessionToken) {
+                        await authorizeAgent();
+                    }
+                    if (!agentId || !sessionToken) return;
 
                     console.log('Starting conversation with BlandWebClient...');
-                    debugger;
                     const blandClient = new BlandWebClient(agentId, sessionToken);
                     await blandClient.initConversation({
                         sampleRate: 44100,
@@ -86,7 +82,6 @@
                         }
                     });
                     console.log('Conversation initialized successfully.');
-                    debugger;
                 } catch (error) {
                     console.error('Error initializing conversation:', error);
                     alert('Failed to start the conversation. Please try again.');
