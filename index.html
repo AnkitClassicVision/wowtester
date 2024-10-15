@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bland.ai Web Agent Widget</title>
-    <script src="https://unpkg.com/bland-client-js-sdk@latest/dist/bland-client-js-sdk.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.min.js"></script>
 </head>
 <body>
@@ -12,17 +11,13 @@
         <button id="btn">Start Conversation</button>
     </div>
 
-    <script>
+    <script type="module">
+        import { BlandWebClient } from 'https://cdn.jsdelivr.net/npm/bland-client-js-sdk@latest/dist/bland-client-js-sdk.esm.js';
+
         document.addEventListener('DOMContentLoaded', async () => {
             const API_KEY = 'sk-vi2t1655977tdj9x96n3f0mmq878zkb00ph56z0gcuoyj2ditxnaaatg5l99yj4269';
             let agentId = null;
             let sessionToken = null;
-
-            if (typeof BlandWebClient === 'undefined') {
-                console.error('BlandWebClient is not defined. Please make sure the SDK script is loading correctly.');
-                alert('Failed to load the Bland.ai SDK. Please check your internet connection and try again.');
-                return;
-            }
 
             const createAgent = async () => {
                 try {
