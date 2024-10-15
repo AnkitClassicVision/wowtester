@@ -73,9 +73,23 @@
                 }
             };
 
+            const requestMicAccess = async () => {
+                try {
+                    console.log('Requesting microphone access...');
+                    await navigator.mediaDevices.getUserMedia({ audio: true });
+                    console.log('Microphone access granted.');
+                } catch (error) {
+                    console.error('Microphone access denied:', error);
+                    alert('Microphone access is required to start the conversation. Please allow microphone access and try again.');
+                    throw error;
+                }
+            };
+
             const initConversation = async () => {
                 try {
                     console.log('Initializing conversation...');
+                    await requestMicAccess();
+
                     if (!agentId) {
                         await createAgent();
                     }
