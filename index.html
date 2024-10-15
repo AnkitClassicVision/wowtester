@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bland.ai Web Agent Widget</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.min.js"></script>
+    <!-- Include the downloaded SDK manually here -->
+    <script src="bland-client-sdk.js"></script>
 </head>
 <body>
     <div id="agent-widget">
         <button id="btn">Start Conversation</button>
     </div>
 
-    <script type="module">
-        import { BlandWebClient } from 'bland-client-js-sdk';
-
+    <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const API_KEY = 'sk-vi2t1655977tdj9x96n3f0mmq878zkb00ph56z0gcuoyj2ditxnaaatg5l99yj4269';
             let agentId = null;
