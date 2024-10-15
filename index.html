@@ -18,6 +18,12 @@
             let agentId = null;
             let sessionToken = null;
 
+            if (typeof BlandWebClient === 'undefined') {
+                console.error('BlandWebClient is not defined. Please make sure the SDK script is loading correctly.');
+                alert('Failed to load the Bland.ai SDK. Please check your internet connection and try again.');
+                return;
+            }
+
             const createAgent = async () => {
                 try {
                     console.log('Creating agent...');
@@ -78,6 +84,7 @@
                     }
                     if (!agentId || !sessionToken) {
                         console.error('Missing agentId or sessionToken');
+                        alert('Failed to initialize the conversation due to missing agent ID or session token.');
                         return;
                     }
 
